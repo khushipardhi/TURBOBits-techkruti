@@ -63,10 +63,18 @@ function SmartLoginRoute({ element }) {
   return element;
 }
 
+import { usePushNotifications } from './hooks/usePushNotifications';
+
+function PushNotifications() {
+  usePushNotifications();
+  return null;
+}
+
 function AppRoutes() {
   return (
     <>
       <SessionGuard />
+      <PushNotifications />
       <Navbar />
       <Routes>
         {/* Public Routes with smart redirect for logged-in users */}

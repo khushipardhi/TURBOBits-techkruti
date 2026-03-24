@@ -4,6 +4,7 @@ const authenticate = require('../middleware/auth');
 const authorize = require('../middleware/authorize');
 const { createFoodSchema, validate } = require('../middleware/validator');
 const { updateTrustScore } = require('../services/trustService');
+const { notifyRole } = require('./notificationRoutes');
 
 const router = express.Router();
 
@@ -60,6 +61,13 @@ router.post('/', authenticate, authorize('DONOR'), createFoodSchema, validate, a
       `SELECT f.*, u.name AS donor_name FROM food_listings f JOIN users u ON f.donor_id = u.user_id WHERE f.food_id = ?`,
       [result.insertId]
     );
+
+    // Push notification to all NGOs
+    notifyRole('RECEIVER', {
+      title: 'New Food Available',
+      body: `${created[0].donor_name} just listed surplus food. Click to claim!`,
+      url: '/ngo'
+    }).catch(err => console.error(err));
 
     res.status(201).json({
       success: true,

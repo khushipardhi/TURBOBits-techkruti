@@ -190,3 +190,13 @@ export async function getTrustLogs() {
   const data = await request('/admin/trust-logs');
   return data.data;
 }
+
+// ==================== PUSH NOTIFICATIONS ====================
+
+export async function subscribeToPush(subscription) {
+  const data = await request('/notifications/subscribe', {
+    method: 'POST',
+    body: JSON.stringify({ subscription }),
+  });
+  return data;
+}

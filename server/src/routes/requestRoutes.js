@@ -4,6 +4,7 @@ const authenticate = require('../middleware/auth');
 const authorize = require('../middleware/authorize');
 const { createRequestSchema, validate } = require('../middleware/validator');
 const { updateTrustScore } = require('../services/trustService');
+const { notifyUser } = require('./notificationRoutes');
 
 const router = express.Router();
 
@@ -41,6 +42,14 @@ router.post('/claim', authenticate, authorize('RECEIVER'), createRequestSchema, 
     await db.execute("UPDATE food_listings SET status = 'REQUESTED' WHERE food_id = ?", [food_id]);
 
     const [created] = await db.execute('SELECT * FROM food_requests WHERE request_id = ?', [result.insertId]);
+
+    // Push Notification to Donor
+    const donorId = food[0].donor_id;
+    notifyUser(donorId, {
+      title: 'Food Claimed',
+      body: `An NGO has requested your surplus food! Check your dashboard.`,
+      url: '/donor'
+    }).catch(err => console.error(err));
 
     res.status(201).json({
       success: true,
@@ -135,6 +144,14 @@ router.patch('/:id/accept', authenticate, authorize('DONOR'), async (req, res, n
       "UPDATE food_requests SET request_status = 'REJECTED', responded_at = NOW() WHERE food_id = ? AND request_id != ? AND request_status = 'PENDING'",
       [requests[0].food_id, id]
     );
+
+    // Push notification to the NGO (Receiver)
+    const receiverId = requests[0].receiver_id;
+    notifyUser(receiverId, {
+      title: 'Request Approved!',
+      body: `Your food claim was approved by the donor. A delivery partner will be assigned soon.`,
+      url: '/ngo'
+    }).catch(err => console.error(err));
 
     res.json({ success: true, message: 'Request accepted. Volunteer will be assigned.' });
   } catch (err) {

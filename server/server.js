@@ -17,6 +17,7 @@ const foodRoutes = require('./src/routes/foodRoutes');
 const requestRoutes = require('./src/routes/requestRoutes');
 const volunteerRoutes = require('./src/routes/volunteerRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
+const { router: notificationRoutes } = require('./src/routes/notificationRoutes');
 
 // Services
 const { startExpiryJob } = require('./src/services/cronJobs');
@@ -97,6 +98,7 @@ app.use('/api/food', foodRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // 404 handler (Express 5 requires named wildcard)
 app.use('{*any}', (req, res) => {

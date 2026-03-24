@@ -12,7 +12,7 @@ const router = express.Router();
 // ==================== REGISTER ====================
 router.post('/register', authLimiter, registerSchema, validate, async (req, res, next) => {
   try {
-    const { name, phone, email, password, role, address } = req.body;
+    const { name, phone, email, password, role, address, pin_code } = req.body;
 
     // Check if phone already exists
     const [existing] = await db.execute(
@@ -27,11 +27,11 @@ router.post('/register', authLimiter, registerSchema, validate, async (req, res,
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
 
-    // Insert user
+    // Insert user (with pin_code)
     const [result] = await db.execute(
-      `INSERT INTO users (role, name, phone, email, password_hash, address) 
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [role, name, phone, email || null, password_hash, address || null]
+      `INSERT INTO users (role, name, phone, email, password_hash, address, pin_code) 
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [role, name, phone, email || null, password_hash, address || null, pin_code || null]
     );
 
     const userId = result.insertId;
@@ -45,9 +45,9 @@ router.post('/register', authLimiter, registerSchema, validate, async (req, res,
       await db.execute('INSERT INTO delivery_partners (partner_id) VALUES (?)', [userId]);
     }
 
-    // Generate JWT
+    // Generate JWT (include pin_code for location matching)
     const token = jwt.sign(
-      { user_id: userId, role, name, email: email || null },
+      { user_id: userId, role, name, email: email || null, pin_code: pin_code || null },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -56,7 +56,7 @@ router.post('/register', authLimiter, registerSchema, validate, async (req, res,
       success: true,
       message: 'Registration successful',
       data: {
-        user: { user_id: userId, name, phone, email: email || null, role, trust_score: 5.00, is_active: true, address: address || null },
+        user: { user_id: userId, name, phone, email: email || null, role, trust_score: 5.00, is_active: true, address: address || null, pin_code: pin_code || null },
         token,
       },
     });
@@ -93,9 +93,9 @@ router.post('/login', authLimiter, loginSchema, validate, async (req, res, next)
       return res.status(401).json({ success: false, error: 'Invalid credentials.' });
     }
 
-    // Generate JWT
+    // Generate JWT (include pin_code for location matching)
     const token = jwt.sign(
-      { user_id: user.user_id, role: user.role, name: user.name, email: user.email },
+      { user_id: user.user_id, role: user.role, name: user.name, email: user.email, pin_code: user.pin_code || null },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     );
@@ -117,7 +117,7 @@ router.post('/login', authLimiter, loginSchema, validate, async (req, res, next)
 router.get('/profile', authenticate, async (req, res, next) => {
   try {
     const [users] = await db.execute(
-      'SELECT user_id, role, name, phone, email, address, trust_score, is_active, created_at FROM users WHERE user_id = ?',
+      'SELECT user_id, role, name, phone, email, address, pin_code, trust_score, is_active, created_at FROM users WHERE user_id = ?',
       [req.user.user_id]
     );
     if (users.length === 0) {

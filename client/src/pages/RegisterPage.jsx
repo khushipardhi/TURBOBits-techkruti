@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Phone, MapPin, Building, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { User, Mail, Lock, Phone, MapPin, Building, Eye, EyeOff, UserPlus, Hash } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { apiRegister } from '../services/api';
 import { useToast } from '../components/common/Toast';
@@ -15,7 +15,7 @@ const roleOptions = [
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', password: '', address: '', role: '',
+    name: '', email: '', phone: '', password: '', address: '', role: '', pin_code: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -142,6 +142,14 @@ export default function RegisterPage() {
               <div className="relative">
                 <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
                 <input type="text" value={form.address} onChange={(e) => updateForm('address', e.target.value)} placeholder="Street, City" className={inputClass} />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">PIN Code *</label>
+              <div className="relative">
+                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
+                <input type="text" value={form.pin_code} onChange={(e) => updateForm('pin_code', e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="462001" maxLength={6} className={inputClass} />
               </div>
             </div>
 

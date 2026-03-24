@@ -74,6 +74,11 @@ export default function FoodCard({ listing, onClaimed }) {
             <div className="flex items-center gap-2 flex-wrap">
               <StatusBadge status={listing.food_type} />
               <StatusBadge status={listing.status} />
+              {listing.is_nearby && (
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-500 text-[10px] font-bold uppercase tracking-wide border border-blue-500/20">
+                  📍 Nearby
+                </span>
+              )}
             </div>
             <CountdownTimer expiresAt={listing.expires_at} />
           </div>

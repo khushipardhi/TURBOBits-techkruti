@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
-import { Sun, Moon, Menu, X, LogOut, Bell } from 'lucide-react';
+import { useInstallPrompt } from '../../hooks/useInstallPrompt';
+import { Sun, Moon, Menu, X, LogOut, Bell, Download } from 'lucide-react';
 
 const publicLinks = [
   { name: 'Home', path: '/' },
@@ -34,6 +35,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
   const { count: notifCount } = useNotifications();
+  const { canInstall, promptInstall } = useInstallPrompt();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -126,6 +128,17 @@ export default function Navbar() {
           >
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
+
+          {/* Install App Button */}
+          {canInstall && (
+            <button
+              onClick={promptInstall}
+              className="px-4 py-2 rounded-full bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] font-medium border border-[var(--accent-primary)]/20 hover:bg-[var(--accent-primary)]/20 transition-all duration-300 flex items-center gap-2 text-sm"
+            >
+              <Download className="w-4 h-4" />
+              Install
+            </button>
+          )}
 
           {isAuthenticated ? (
             <div className="flex items-center gap-3">

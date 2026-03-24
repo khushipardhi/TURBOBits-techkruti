@@ -9,17 +9,29 @@ const { notifyRole } = require('./notificationRoutes');
 const router = express.Router();
 
 // ==================== GET ALL AVAILABLE FOOD ====================
-// Public — NGOs browse this feed
+// PIN-code based matching: NGO sees food from their area first
 router.get('/available', authenticate, async (req, res, next) => {
   try {
+    const userPinCode = req.user.pin_code || null;
+
     const [listings] = await db.execute(
-      `SELECT f.*, u.name AS donor_name, u.phone AS donor_phone, u.trust_score AS donor_trust
+      `SELECT f.*, u.name AS donor_name, u.phone AS donor_phone, u.trust_score AS donor_trust, u.pin_code AS donor_pin_code
        FROM food_listings f
        JOIN users u ON f.donor_id = u.user_id
        WHERE f.status = 'AVAILABLE' AND f.expires_at > NOW()
        ORDER BY f.created_at DESC`
     );
-    res.json({ success: true, data: listings });
+
+    // Tag each listing with 'nearby' flag for the requesting user
+    const taggedListings = listings.map(listing => ({
+      ...listing,
+      is_nearby: userPinCode && listing.donor_pin_code === userPinCode,
+    }));
+
+    // Sort: nearby first, then others
+    taggedListings.sort((a, b) => (b.is_nearby ? 1 : 0) - (a.is_nearby ? 1 : 0));
+
+    res.json({ success: true, data: taggedListings });
   } catch (err) {
     next(err);
   }

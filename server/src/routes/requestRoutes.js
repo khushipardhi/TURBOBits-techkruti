@@ -14,9 +14,9 @@ router.post('/claim', authenticate, authorize('RECEIVER'), createRequestSchema, 
     const { food_id } = req.body;
     const receiver_id = req.user.user_id;
 
-    // Verify food is available
+    // Verify food is available or already requested by other NGOs (multi-NGO mode)
     const [food] = await db.execute(
-      "SELECT * FROM food_listings WHERE food_id = ? AND status = 'AVAILABLE' AND expires_at > NOW()",
+      "SELECT * FROM food_listings WHERE food_id = ? AND status IN ('AVAILABLE', 'REQUESTED') AND expires_at > NOW()",
       [food_id]
     );
     if (food.length === 0) {
@@ -32,13 +32,13 @@ router.post('/claim', authenticate, authorize('RECEIVER'), createRequestSchema, 
       return res.status(409).json({ success: false, error: 'You have already claimed this food.' });
     }
 
-    // Create request
+    // Create request (food stays AVAILABLE/REQUESTED — donor decides which NGO to accept)
     const [result] = await db.execute(
       'INSERT INTO food_requests (food_id, receiver_id) VALUES (?, ?)',
       [food_id, receiver_id]
     );
 
-    // Update food status to REQUESTED
+    // Mark food as REQUESTED (multiple requests allowed)
     await db.execute("UPDATE food_listings SET status = 'REQUESTED' WHERE food_id = ?", [food_id]);
 
     const [created] = await db.execute('SELECT * FROM food_requests WHERE request_id = ?', [result.insertId]);

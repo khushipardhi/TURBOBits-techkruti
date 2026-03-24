@@ -4,10 +4,19 @@ const { authenticate } = require('../middleware/authorize');
 
 const router = express.Router();
 
-// Configuration
-// In production, keep VAPID_PRIVATE_KEY in .env
-const publicVapidKey = 'BK2Fl1jQ43gySP6hWN8Dr9hk_P5_ky62tFlL7FjkunCYhwDaoVjLw1VgWX4Gd8zAaDOxK7hrczsxaHn6LF-gDKQ';
-const privateVapidKey = process.env.VAPID_PRIVATE_KEY || 'SdRuCOjxoV2khcsj2wbby6CRs3BKqx290riA_URmVCA';
+// ============================================================
+// VAPID Keys — must be set in Render Environment Variables:
+//   VAPID_PUBLIC_KEY  = BK2Fl1jQ43gySP6hWN8Dr9hk_P5_ky62tFlL7FjkunCYhwDaoVjLw1VgWX4Gd8zAaDOxK7hrczsxaHn6LF-gDKQ
+//   VAPID_PRIVATE_KEY = SdRuCOjxoV2khcsj2wbby6CRs3BKqx290riA_URmVCA
+// ============================================================
+const publicVapidKey =
+  process.env.VAPID_PUBLIC_KEY ||
+  'BK2Fl1jQ43gySP6hWN8Dr9hk_P5_ky62tFlL7FjkunCYhwDaoVjLw1VgWX4Gd8zAaDOxK7hrczsxaHn6LF-gDKQ';
+const privateVapidKey =
+  process.env.VAPID_PRIVATE_KEY ||
+  'SdRuCOjxoV2khcsj2wbby6CRs3BKqx290riA_URmVCA';
+
+console.log('[Push] Configuring web-push VAPID with public key:', publicVapidKey.slice(0, 20) + '...');
 
 webpush.setVapidDetails(
   'mailto:test@example.com',

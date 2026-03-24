@@ -6,8 +6,8 @@ const router = express.Router();
 
 // Configuration
 // In production, keep VAPID_PRIVATE_KEY in .env
-const publicVapidKey = 'BPmHE9f3ilc2QyWI80BbylO-NW7nf78XqOBbH-TG9Jo0E2s_hqlIvpcWIaZOyncW4lZ4KBbNfv_Zd8gswxfVGyU';
-const privateVapidKey = process.env.VAPID_PRIVATE_KEY || 'dummy_private_key_replace_me';
+const publicVapidKey = 'BK2Fl1jQ43gySP6hWN8Dr9hk_P5_ky62tFlL7FjkunCYhwDaoVjLw1VgWX4Gd8zAaDOxK7hrczsxaHn6LF-gDKQ';
+const privateVapidKey = process.env.VAPID_PRIVATE_KEY || 'SdRuCOjxoV2khcsj2wbby6CRs3BKqx290riA_URmVCA';
 
 webpush.setVapidDetails(
   'mailto:test@example.com',

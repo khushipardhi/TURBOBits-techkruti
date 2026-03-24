@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { subscribeToPush } from '../services/api';
 
-const VAPID_PUBLIC_KEY = 'BPmHE9f3ilc2QyWI80BbylO-NW7nf78XqOBbH-TG9Jo0E2s_hqlIvpcWIaZOyncW4lZ4KBbNfv_Zd8gswxfVGyU';
+const VAPID_PUBLIC_KEY = 'BK2Fl1jQ43gySP6hWN8Dr9hk_P5_ky62tFlL7FjkunCYhwDaoVjLw1VgWX4Gd8zAaDOxK7hrczsxaHn6LF-gDKQ';
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);

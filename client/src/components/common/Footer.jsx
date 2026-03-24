@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Heart, GitBranch, MessageCircle, Globe, Mail } from 'lucide-react';
 
 const footerLinks = {
   Platform: [
@@ -38,7 +38,7 @@ export default function Footer() {
               Connecting surplus food with those who need it most. Reducing waste, feeding communities, saving the planet.
             </p>
             <div className="flex items-center gap-3 pt-2">
-              {[Github, Twitter, Linkedin, Mail].map((Icon, i) => (
+              {[GitBranch, MessageCircle, Globe, Mail].map((Icon, i) => (
                 <a
                   key={i}
                   href="#"

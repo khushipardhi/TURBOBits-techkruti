@@ -211,12 +211,12 @@ export default function PostFoodForm({ onPosted }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5"><Clock className="w-4 h-4" /> Prep Time</label>
+            <label className="block text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5"><Clock className="w-4 h-4" /> Prepared At</label>
             <input
               type="text"
               value={form.prep_time}
               onChange={(e) => updateForm('prep_time', e.target.value)}
-              placeholder="e.g. Ready now, 30 mins"
+              placeholder="e.g. 10:00 AM today"
               className={inputCls}
             />
           </div>

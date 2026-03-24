@@ -87,7 +87,33 @@ export default function RequestHistory({ requests }) {
           >
             <div className="flex flex-col md:flex-row justify-between gap-3">
               <div className="flex-1">
-                <p className="font-medium text-[var(--text-primary)] mb-0.5">{req.food_description}</p>
+                {/* Parse JSON description for formatting */}
+                {(() => {
+                  let items = [];
+                  try {
+                    items = JSON.parse(req.food_description).items || [];
+                  } catch {
+                    items = [{ name: req.food_description }];
+                  }
+
+                  const title = items.length > 1 
+                    ? `${items.length} Items Listed` 
+                    : items[0]?.name;
+
+                  return (
+                    <div className="mb-1">
+                      <p className="font-display font-semibold text-[var(--text-primary)] text-base">{title}</p>
+                      {items.length > 1 && (
+                        <div className="text-sm text-[var(--text-secondary)] mt-1">
+                          {items.slice(0, 3).map((itm, i) => (
+                            <span key={i} className="mr-3 text-xs">• {itm.name} ({itm.quantity} {itm.unit})</span>
+                          ))}
+                          {items.length > 3 && <span className="text-xs italic text-[var(--text-tertiary)]">+{items.length - 3} more</span>}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
                 <div className="flex items-center gap-3 text-xs text-[var(--text-tertiary)] mb-2">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />

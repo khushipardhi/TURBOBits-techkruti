@@ -14,6 +14,8 @@ import NgoDashboard from './pages/NgoDashboard';
 import VolunteerDashboard from './pages/VolunteerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ProfilePage from './pages/ProfilePage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Role → dashboard path map
@@ -82,6 +84,8 @@ function AppRoutes() {
         <Route path="/" element={<SmartLoginRoute element={<LandingPage />} />} />
         <Route path="/login" element={<SmartLoginRoute element={<LoginPage />} />} />
         <Route path="/register" element={<SmartLoginRoute element={<RegisterPage />} />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
 
         {/* Protected Routes */}
         <Route

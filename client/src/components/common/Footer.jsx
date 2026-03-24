@@ -9,16 +9,16 @@ const footerLinks = {
     { name: 'For NGOs', path: '/register' },
   ],
   Resources: [
-    { name: 'Documentation', path: '#' },
-    { name: 'API Reference', path: '#' },
-    { name: 'Trust & Safety', path: '#' },
-    { name: 'Impact Reports', path: '#' },
+    { name: 'About FoodLink', path: '/about' },
+    { name: 'Contact Us', path: '/contact' },
+    { name: 'Trust & Safety', path: '/about' },
+    { name: 'Impact Dashboard', path: '/#impact' },
   ],
   Company: [
-    { name: 'About Us', path: '#' },
-    { name: 'Contact', path: '#' },
-    { name: 'Privacy Policy', path: '#' },
-    { name: 'Terms of Service', path: '#' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Contact', path: '/contact' },
+    { name: 'Privacy Policy', path: '/about' },
+    { name: 'Terms of Service', path: '/about' },
   ],
 };
 

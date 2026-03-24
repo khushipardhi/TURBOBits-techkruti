@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   usePolling(refresh, 10000);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12">
+    <div className="min-h-screen bg-[var(--bg-primary)] global-grid-bg pt-24 pb-12">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-display font-bold text-[var(--text-primary)] tracking-tight">

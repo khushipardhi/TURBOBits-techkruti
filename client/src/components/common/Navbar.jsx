@@ -5,12 +5,14 @@ import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import { useInstallPrompt } from '../../hooks/useInstallPrompt';
+import NotificationPanel from './NotificationPanel';
 import { Sun, Moon, Menu, X, LogOut, Bell, Download } from 'lucide-react';
 
 const publicLinks = [
   { name: 'Home', path: '/' },
   { name: 'How It Works', path: '/#how-it-works' },
-  { name: 'Features', path: '/#features' },
+  { name: 'About', path: '/about' },
+  { name: 'Contact', path: '/contact' },
 ];
 
 const roleLabels = {
@@ -31,6 +33,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
@@ -72,6 +75,7 @@ export default function Navbar() {
     : publicLinks;
 
   return (
+    <>
     <header
       className={cn(
         'fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-transparent',
@@ -145,7 +149,7 @@ export default function Navbar() {
               {/* Notification Bell */}
               <div className="relative">
                 <button
-                  onClick={() => navigate(rolePaths[user?.role] || '/')}
+                  onClick={() => setNotifOpen(true)}
                   className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all duration-300 relative"
                   aria-label="Notifications"
                 >
@@ -239,5 +243,13 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </header>
+
+      {/* Notification Side Panel */}
+      <NotificationPanel
+        isOpen={notifOpen}
+        onClose={() => setNotifOpen(false)}
+        notifications={[]}
+      />
+    </>
   );
 }

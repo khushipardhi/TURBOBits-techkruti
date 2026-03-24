@@ -52,7 +52,7 @@ export default function ProfilePage() {
   const memberSince = profile.created_at ? new Date(profile.created_at).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12">
+    <div className="min-h-screen bg-[var(--bg-primary)] global-grid-bg pt-24 pb-12">
       <div className="max-w-3xl mx-auto px-6">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back

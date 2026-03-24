@@ -40,7 +40,7 @@ router.get('/my-listings', authenticate, authorize('DONOR'), async (req, res, ne
 // ==================== CREATE FOOD LISTING ====================
 router.post('/', authenticate, authorize('DONOR'), createFoodSchema, validate, async (req, res, next) => {
   try {
-    const { food_type, description, quantity, hygiene_confirmed, pickup_address } = req.body;
+    const { food_type, description, quantity, unit = 'servings', hygiene_confirmed, pickup_address } = req.body;
     const donor_id = req.user.user_id;
 
     // Get donor's address as fallback
@@ -50,14 +50,14 @@ router.post('/', authenticate, authorize('DONOR'), createFoodSchema, validate, a
     // Expires in 2 hours
     const [result] = await db.execute(
       `INSERT INTO food_listings 
-       (donor_id, food_type, description, quantity, hygiene_confirmed, pickup_address, expires_at)
-       VALUES (?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 2 HOUR))`,
-      [donor_id, food_type, description, quantity, hygiene_confirmed, address]
+       (donor_id, food_type, description, quantity, unit, hygiene_confirmed, pickup_address, expires_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 2 HOUR))`,
+      [donor_id, food_type, description, quantity, unit, hygiene_confirmed, address]
     );
 
-    // Fetch the created listing
+    // Fetch the created listing with donor info
     const [created] = await db.execute(
-      'SELECT * FROM food_listings WHERE food_id = ?',
+      `SELECT f.*, u.name AS donor_name FROM food_listings f JOIN users u ON f.donor_id = u.user_id WHERE f.food_id = ?`,
       [result.insertId]
     );
 

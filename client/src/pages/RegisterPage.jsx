@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, Phone, MapPin, Building, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { mockRegister } from '../services/mockApi';
+import { apiRegister } from '../services/api';
 import { useToast } from '../components/common/Toast';
 import { ROLES } from '../utils/constants';
 
@@ -29,12 +29,18 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.role) {
+    if (!form.name || !form.email || !form.phone || !form.password || !form.role) {
       return addToast('Please fill in all required fields', 'error');
+    }
+    if (form.phone.length !== 10) {
+      return addToast('Phone must be 10 digits', 'error');
+    }
+    if (form.password.length < 6) {
+      return addToast('Password must be at least 6 characters', 'error');
     }
     setLoading(true);
     try {
-      const { user, token } = await mockRegister(form);
+      const { user, token } = await apiRegister(form);
       register(user, token);
       addToast(`Welcome to FoodLink, ${user.name}!`, 'success');
       navigate(rolePaths[user.role] || '/');

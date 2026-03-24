@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import { ToastProvider } from './components/common/Toast';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider, useToast } from './components/common/Toast';
 import Navbar from './components/common/Navbar';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -14,56 +15,113 @@ import VolunteerDashboard from './pages/VolunteerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import NotFoundPage from './pages/NotFoundPage';
 
+// Role → dashboard path map
+const ROLE_PATHS = {
+  DONOR: '/donor',
+  RECEIVER: '/ngo',
+  VOLUNTEER: '/volunteer',
+  ADMIN: '/admin',
+};
+
+/**
+ * SessionGuard: listens for 401 events from api.js and logs the user out.
+ * Must be inside AuthProvider + ToastProvider.
+ */
+function SessionGuard() {
+  const { handleUnauthorized, isAuthenticated } = useAuth();
+  const { addToast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = () => {
+      if (isAuthenticated) {
+        handleUnauthorized();
+        addToast('Your session has expired. Please login again.', 'error');
+        navigate('/login', { replace: true });
+      }
+    };
+    window.addEventListener('foodlink:session-expired', handler);
+    return () => window.removeEventListener('foodlink:session-expired', handler);
+  }, [handleUnauthorized, isAuthenticated, addToast, navigate]);
+
+  return null;
+}
+
+/**
+ * SmartLoginRoute: if user is already authenticated, redirect to their dashboard.
+ */
+function SmartLoginRoute({ element }) {
+  const { isAuthenticated, user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (isAuthenticated && user?.role) {
+    const path = ROLE_PATHS[user.role];
+    if (path) return <Navigate to={path} replace />;
+  }
+
+  return element;
+}
+
+function AppRoutes() {
+  return (
+    <>
+      <SessionGuard />
+      <Navbar />
+      <Routes>
+        {/* Public Routes with smart redirect for logged-in users */}
+        <Route path="/" element={<SmartLoginRoute element={<LandingPage />} />} />
+        <Route path="/login" element={<SmartLoginRoute element={<LoginPage />} />} />
+        <Route path="/register" element={<SmartLoginRoute element={<RegisterPage />} />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/donor"
+          element={
+            <ProtectedRoute allowedRoles={['DONOR']}>
+              <DonorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ngo"
+          element={
+            <ProtectedRoute allowedRoles={['RECEIVER']}>
+              <NgoDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/volunteer"
+          element={
+            <ProtectedRoute allowedRoles={['VOLUNTEER']}>
+              <VolunteerDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <ToastProvider>
           <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-            <Navbar />
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-
-              {/* Protected Routes */}
-              <Route
-                path="/donor"
-                element={
-                  <ProtectedRoute allowedRoles={['DONOR']}>
-                    <DonorDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/ngo"
-                element={
-                  <ProtectedRoute allowedRoles={['RECEIVER']}>
-                    <NgoDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/volunteer"
-                element={
-                  <ProtectedRoute allowedRoles={['VOLUNTEER']}>
-                    <VolunteerDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* 404 */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+            <AppRoutes />
           </div>
         </ToastProvider>
       </AuthProvider>

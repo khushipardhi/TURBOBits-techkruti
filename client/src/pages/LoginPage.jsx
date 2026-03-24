@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { mockLogin } from '../services/mockApi';
+import { apiLogin } from '../services/api';
 import { useToast } from '../components/common/Toast';
 
 export default function LoginPage() {
@@ -25,9 +25,10 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return addToast('Please enter your email', 'error');
+    if (!password) return addToast('Please enter your password', 'error');
     setLoading(true);
     try {
-      const { user, token } = await mockLogin(email, password);
+      const { user, token } = await apiLogin(email, password);
       login(user, token);
       addToast(`Welcome back, ${user.name}!`, 'success');
       navigate(rolePaths[user.role] || '/');
@@ -38,16 +39,17 @@ export default function LoginPage() {
     }
   };
 
-  const quickLogin = async (email) => {
-    setEmail(email);
+  const quickLogin = async (demoEmail, demoPassword) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
     setLoading(true);
     try {
-      const { user, token } = await mockLogin(email, '');
+      const { user, token } = await apiLogin(demoEmail, demoPassword);
       login(user, token);
       addToast(`Logged in as ${user.name}`, 'success');
       navigate(rolePaths[user.role] || '/');
     } catch (err) {
-      addToast(err.message, 'error');
+      addToast(err.message || 'Demo login failed — register first!', 'error');
     } finally {
       setLoading(false);
     }
@@ -141,19 +143,22 @@ export default function LoginPage() {
 
         {/* Quick Login Buttons (Demo) */}
         <div className="mt-6 p-5 rounded-2xl bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl">
-          <p className="text-xs text-[var(--text-tertiary)] text-center mb-3 font-semibold uppercase tracking-wider">
+          <p className="text-xs text-[var(--text-tertiary)] text-center mb-1 font-semibold uppercase tracking-wider">
             Quick Demo Login
+          </p>
+          <p className="text-[10px] text-[var(--text-tertiary)] text-center mb-3">
+            Register accounts first, then use these to log in
           </p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { label: '🏨 Donor', email: 'taj@demo.com' },
-              { label: '🏢 NGO', email: 'akshaya@demo.com' },
-              { label: '🚗 Volunteer', email: 'rahul@demo.com' },
-              { label: '⚙️ Admin', email: 'admin@demo.com' },
+              { label: '🏨 Donor', email: 'donor@test.com', password: 'test1234' },
+              { label: '🏢 NGO', email: 'ngo@test.com', password: 'test1234' },
+              { label: '🚗 Volunteer', email: 'volunteer@test.com', password: 'test1234' },
+              { label: '⚙️ Admin', email: 'admin@test.com', password: 'test1234' },
             ].map((demo) => (
               <button
                 key={demo.email}
-                onClick={() => quickLogin(demo.email)}
+                onClick={() => quickLogin(demo.email, demo.password)}
                 disabled={loading}
                 className="py-2.5 px-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/30 hover:text-[var(--accent-primary)] transition-all disabled:opacity-50"
               >

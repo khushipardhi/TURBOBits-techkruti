@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
-import { Sun, Moon, Menu, X, LogOut, ChevronDown } from 'lucide-react';
+import { useNotifications } from '../../hooks/useNotifications';
+import { Sun, Moon, Menu, X, LogOut, Bell } from 'lucide-react';
 
 const publicLinks = [
   { name: 'Home', path: '/' },
@@ -32,6 +33,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { count: notifCount } = useNotifications();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -127,6 +129,25 @@ export default function Navbar() {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
+              {/* Notification Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => navigate(rolePaths[user?.role] || '/')}
+                  className="p-2 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--card-bg)] transition-all duration-300 relative"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-5 h-5" />
+                  {notifCount > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center"
+                    >
+                      {notifCount > 9 ? '9+' : notifCount}
+                    </motion.span>
+                  )}
+                </button>
+              </div>
               <span className="text-sm text-[var(--text-secondary)]">
                 {user?.name}
               </span>

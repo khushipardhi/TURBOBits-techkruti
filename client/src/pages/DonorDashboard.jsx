@@ -7,7 +7,7 @@ import ActiveListings from '../components/donor/ActiveListings';
 import IncomingRequests from '../components/donor/IncomingRequests';
 import DonationHistory from '../components/donor/DonationHistory';
 import Footer from '../components/common/Footer';
-import { getDonorListings, getDonorRequests } from '../services/mockApi';
+import { getDonorListings, getDonorRequests } from '../services/api';
 import { usePolling } from '../hooks/usePolling';
 
 export default function DonorDashboard() {
@@ -18,15 +18,17 @@ export default function DonorDashboard() {
   const refresh = useCallback(async () => {
     try {
       const [l, r] = await Promise.all([
-        getDonorListings(user?.user_id),
-        getDonorRequests(user?.user_id),
+        getDonorListings(),
+        getDonorRequests(),
       ]);
-      setListings(l);
-      setRequests(r);
-    } catch {}
-  }, [user]);
+      setListings(l || []);
+      setRequests(r || []);
+    } catch (err) {
+      console.error('DonorDashboard refresh error:', err.message);
+    }
+  }, []);
 
-  usePolling(refresh, 10000);
+  usePolling(refresh, 5000);
 
   const active = listings.filter((l) => ['AVAILABLE', 'REQUESTED', 'ACCEPTED'].includes(l.status));
   const fulfilled = listings.filter((l) => l.status === 'FULFILLED');
@@ -54,7 +56,7 @@ export default function DonorDashboard() {
         {/* Post Food Form + Active Listings */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <PostFoodForm onPosted={refresh} />
-          <ActiveListings listings={listings} />
+          <ActiveListings listings={listings} onRefresh={refresh} />
         </div>
 
         {/* Incoming Requests */}

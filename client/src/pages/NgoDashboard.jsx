@@ -5,7 +5,7 @@ import StatCard from '../components/common/StatCard';
 import FoodFeed from '../components/ngo/FoodFeed';
 import RequestHistory from '../components/ngo/RequestHistory';
 import Footer from '../components/common/Footer';
-import { getAvailableFood, getReceiverRequests } from '../services/mockApi';
+import { getAvailableFood, getReceiverRequests } from '../services/api';
 import { usePolling } from '../hooks/usePolling';
 
 export default function NgoDashboard() {
@@ -17,14 +17,16 @@ export default function NgoDashboard() {
     try {
       const [food, reqs] = await Promise.all([
         getAvailableFood(),
-        getReceiverRequests(user?.user_id),
+        getReceiverRequests(),
       ]);
-      setAvailableFood(food);
-      setRequests(reqs);
-    } catch {}
-  }, [user]);
+      setAvailableFood(food || []);
+      setRequests(reqs || []);
+    } catch (err) {
+      console.error('NgoDashboard refresh error:', err.message);
+    }
+  }, []);
 
-  usePolling(refresh, 10000);
+  usePolling(refresh, 5000);
 
   const fulfilled = requests.filter((r) => r.request_status === 'FULFILLED');
   const totalServings = fulfilled.reduce((sum, r) => sum + (r.quantity || 0), 0);

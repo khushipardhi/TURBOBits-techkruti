@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Clock, Users } from 'lucide-react';
+import { MapPin, Users, Star, Clock } from 'lucide-react';
 import StatusBadge from '../common/StatusBadge';
 import CountdownTimer from '../common/CountdownTimer';
 import { useToast } from '../common/Toast';
-import { claimFood } from '../../services/mockApi';
+import { claimFood } from '../../services/api';
 
 export default function FoodCard({ listing, receiverId, onClaimed }) {
   const [loading, setLoading] = useState(false);
@@ -13,8 +13,8 @@ export default function FoodCard({ listing, receiverId, onClaimed }) {
   const handleClaim = async () => {
     setLoading(true);
     try {
-      await claimFood(listing.food_id, receiverId);
-      addToast(`Claimed "${listing.description}" — waiting for donor approval`, 'success');
+      await claimFood(listing.food_id);
+      addToast(`Food claimed! Waiting for donor approval.`, 'success');
       onClaimed?.();
     } catch (err) {
       addToast(err.message, 'error');
@@ -23,19 +23,21 @@ export default function FoodCard({ listing, receiverId, onClaimed }) {
     }
   };
 
+  const trustScore = listing.donor_trust ?? listing.trust_score;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl hover:border-[var(--accent-primary)]/30 hover:-translate-y-1 transition-all duration-500 group relative overflow-hidden"
+      className="p-6 rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl hover:border-[var(--accent-primary)]/40 hover:-translate-y-1 transition-all duration-500 group relative overflow-hidden"
     >
       {/* Ambient Glow */}
-      <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-[var(--accent-primary)]/15 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+      <div className="absolute top-0 right-0 w-[150px] h-[150px] bg-[var(--accent-primary)]/12 blur-[80px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2 flex-wrap">
             <StatusBadge status={listing.food_type} />
             <StatusBadge status={listing.status} />
           </div>
@@ -43,27 +45,36 @@ export default function FoodCard({ listing, receiverId, onClaimed }) {
         </div>
 
         {/* Description */}
-        <h4 className="text-lg font-display font-semibold text-[var(--text-primary)] mb-2 leading-snug">
+        <h4 className="text-base font-display font-semibold text-[var(--text-primary)] mb-3 leading-snug line-clamp-2">
           {listing.description}
         </h4>
 
         {/* Meta */}
-        <div className="space-y-2 mb-5">
+        <div className="space-y-1.5 mb-4">
+          {/* Quantity + unit */}
           <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-            <Users className="w-4 h-4 text-[var(--text-tertiary)]" />
-            <span>{listing.quantity} servings</span>
+            <Users className="w-4 h-4 text-[var(--text-tertiary)] flex-shrink-0" />
+            <span className="font-medium">{listing.quantity} {listing.unit || 'servings'}</span>
           </div>
+          {/* Pickup address */}
           <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-            <MapPin className="w-4 h-4 text-[var(--text-tertiary)]" />
-            <span>{listing.pickup_address || 'Pickup address'}</span>
+            <MapPin className="w-4 h-4 text-[var(--text-tertiary)] flex-shrink-0" />
+            <span className="truncate">{listing.pickup_address || 'Pickup address TBD'}</span>
           </div>
+          {/* Donor with trust score */}
           <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
-            <Clock className="w-4 h-4 text-[var(--text-tertiary)]" />
-            <span>By {listing.donor_name}</span>
+            <Clock className="w-4 h-4 text-[var(--text-tertiary)] flex-shrink-0" />
+            <span className="truncate">By {listing.donor_name || 'Donor'}</span>
+            {trustScore != null && (
+              <span className="flex items-center gap-0.5 text-xs font-bold text-amber-500 ml-auto">
+                <Star className="w-3 h-3 fill-amber-500" />
+                {Number(trustScore).toFixed(1)}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Claim Button */}
+        {/* Action */}
         {listing.status === 'AVAILABLE' ? (
           <button
             onClick={handleClaim}
@@ -73,7 +84,7 @@ export default function FoodCard({ listing, receiverId, onClaimed }) {
             {loading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              'Claim This Food'
+              '🍽️ Claim This Food'
             )}
           </button>
         ) : (

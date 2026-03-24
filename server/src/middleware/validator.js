@@ -35,6 +35,7 @@ const createFoodSchema = [
   body('description').trim().notEmpty().withMessage('Description is required')
     .isLength({ max: 500 }).withMessage('Description too long'),
   body('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+  body('unit').optional().isIn(['servings', 'kg', 'plates', 'packets', 'litres']).withMessage('Invalid unit'),
   body('hygiene_confirmed').isBoolean().withMessage('Hygiene confirmation required'),
   body('pickup_address').optional().trim(),
 ];

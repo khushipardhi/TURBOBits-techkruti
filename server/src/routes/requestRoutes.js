@@ -56,11 +56,18 @@ router.post('/claim', authenticate, authorize('RECEIVER'), createRequestSchema, 
 router.get('/my-requests', authenticate, authorize('RECEIVER'), async (req, res, next) => {
   try {
     const [requests] = await db.execute(
-      `SELECT fr.*, f.description AS food_description, f.food_type, f.quantity, f.expires_at,
-              u.name AS donor_name
+      `SELECT fr.*, 
+              f.description AS food_description, f.food_type, f.quantity, f.unit, f.expires_at,
+              f.pickup_address,
+              u.name AS donor_name,
+              d.status AS delivery_status, d.delivery_id,
+              d.picked_up_at, d.delivered_at,
+              v.name AS volunteer_name
        FROM food_requests fr
        JOIN food_listings f ON fr.food_id = f.food_id
        JOIN users u ON f.donor_id = u.user_id
+       LEFT JOIN deliveries d ON d.request_id = fr.request_id
+       LEFT JOIN users v ON d.volunteer_id = v.user_id
        WHERE fr.receiver_id = ?
        ORDER BY fr.requested_at DESC`,
       [req.user.user_id]
@@ -75,11 +82,16 @@ router.get('/my-requests', authenticate, authorize('RECEIVER'), async (req, res,
 router.get('/incoming', authenticate, authorize('DONOR'), async (req, res, next) => {
   try {
     const [requests] = await db.execute(
-      `SELECT fr.*, f.description AS food_description, f.food_type, f.quantity, f.expires_at,
-              u.name AS receiver_name, u.phone AS receiver_phone, u.trust_score AS receiver_trust
+      `SELECT fr.*, 
+              f.description AS food_description, f.food_type, f.quantity, f.unit, f.expires_at,
+              u.name AS receiver_name, u.phone AS receiver_phone, u.trust_score AS receiver_trust,
+              d.status AS delivery_status, d.delivery_id,
+              v.name AS volunteer_name
        FROM food_requests fr
        JOIN food_listings f ON fr.food_id = f.food_id
        JOIN users u ON fr.receiver_id = u.user_id
+       LEFT JOIN deliveries d ON d.request_id = fr.request_id
+       LEFT JOIN users v ON d.volunteer_id = v.user_id
        WHERE f.donor_id = ?
        ORDER BY fr.requested_at DESC`,
       [req.user.user_id]

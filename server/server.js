@@ -63,6 +63,31 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Database debug route
+app.get('/api/test-db', async (req, res) => {
+  const db = require('./src/config/db');
+  try {
+    const [ping] = await db.execute('SELECT 1 AS connected');
+    const [tables] = await db.execute('SHOW TABLES');
+    const tableNames = tables.map(t => Object.values(t)[0]);
+
+    const tableCounts = {};
+    for (const table of tableNames) {
+      const [rows] = await db.execute(`SELECT COUNT(*) AS count FROM \`${table}\``);
+      tableCounts[table] = rows[0].count;
+    }
+
+    res.json({
+      success: true,
+      message: 'Database connected',
+      database: process.env.DB_NAME,
+      tables: tableCounts,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/food', foodRoutes);

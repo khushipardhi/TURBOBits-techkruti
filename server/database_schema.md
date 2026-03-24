@@ -190,7 +190,19 @@ VALUES ('ADMIN', 'FoodLink Admin', '9999999999', 'admin@foodlink.app',
 
 ---
 
-> **Entity Relationships:**
+## 11. Schema Migrations (Run After Initial Setup)
+
+```sql
+-- Add unit column to food_listings (run once)
+ALTER TABLE food_listings 
+ADD COLUMN unit ENUM('servings', 'kg', 'plates', 'packets', 'litres') 
+NOT NULL DEFAULT 'servings' 
+AFTER quantity;
+```
+
+---
+
+
 > - `users (1) ─── (1) donors`
 > - `users (1) ─── (1) receivers`
 > - `users (1) ─── (1) delivery_partners`

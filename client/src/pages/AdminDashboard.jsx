@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import StatCard from '../components/common/StatCard';
 import StatusBadge from '../components/common/StatusBadge';
 import Footer from '../components/common/Footer';
-import { getAdminStats, getAllUsers, getTrustLogs } from '../services/mockApi';
+import { getAdminStats, getAllUsers, getTrustLogs } from '../services/api';
 import { usePolling } from '../hooks/usePolling';
 import { formatDateTime } from '../utils/formatters';
 
@@ -27,13 +27,15 @@ export default function AdminDashboard() {
   const refresh = useCallback(async () => {
     try {
       const [s, u, t] = await Promise.all([getAdminStats(), getAllUsers(), getTrustLogs()]);
-      setStats(s);
-      setUsers(u);
-      setTrustLogs(t);
-    } catch {}
+      setStats(s || {});
+      setUsers(u || []);
+      setTrustLogs(t || []);
+    } catch (err) {
+      console.error('AdminDashboard refresh error:', err.message);
+    }
   }, []);
 
-  usePolling(refresh, 15000);
+  usePolling(refresh, 10000);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12">
@@ -123,7 +125,7 @@ export default function AdminDashboard() {
                     <td className="p-4 text-[var(--text-secondary)]">{u.email}</td>
                     <td className="p-4">
                       <span className={`font-mono font-bold ${u.trust_score >= 7 ? 'text-emerald-500' : u.trust_score >= 5 ? 'text-amber-500' : 'text-red-500'}`}>
-                        {u.trust_score.toFixed(1)}
+                        {u.trust_score != null ? Number(u.trust_score).toFixed(1) : '—'}
                       </span>
                     </td>
                     <td className="p-4">

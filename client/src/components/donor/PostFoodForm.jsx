@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Leaf, Drumstick, Shuffle, CheckCircle } from 'lucide-react';
+import { Plus, Leaf, Drumstick, Shuffle, CheckCircle, Scale } from 'lucide-react';
 import { useToast } from '../common/Toast';
-import { createFoodListing } from '../../services/mockApi';
+import { createFoodListing } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
 const foodTypes = [
@@ -11,8 +11,18 @@ const foodTypes = [
   { value: 'MIXED', label: 'Mixed', icon: Shuffle, color: 'text-orange-500 border-orange-500/30 bg-orange-500/5' },
 ];
 
+const units = ['servings', 'kg', 'plates', 'packets', 'litres'];
+
+const inputCls = 'w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20 transition-all text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]';
+
 export default function PostFoodForm({ onPosted }) {
-  const [form, setForm] = useState({ description: '', quantity: '', food_type: '', hygiene_confirmed: false });
+  const [form, setForm] = useState({
+    description: '',
+    quantity: '',
+    unit: 'servings',
+    food_type: '',
+    hygiene_confirmed: false,
+  });
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
   const { user } = useAuth();
@@ -34,10 +44,10 @@ export default function PostFoodForm({ onPosted }) {
         donor_id: user?.user_id,
         donor_name: user?.name,
         quantity: parseInt(form.quantity),
-        pickup_address: user?.address || 'Address not set',
+        pickup_address: user?.address || null,
       });
-      addToast('Food listing posted! NGOs can now see it.', 'success');
-      setForm({ description: '', quantity: '', food_type: '', hygiene_confirmed: false });
+      addToast('Food listing posted! NGOs can now claim it.', 'success');
+      setForm({ description: '', quantity: '', unit: 'servings', food_type: '', hygiene_confirmed: false });
       onPosted?.();
     } catch (err) {
       addToast(err.message, 'error');
@@ -50,15 +60,20 @@ export default function PostFoodForm({ onPosted }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-6 md:p-8 rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl"
+      className="p-6 md:p-8 rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl relative overflow-hidden"
     >
-      <h3 className="text-xl font-display font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2">
-        <Plus className="w-5 h-5 text-[var(--accent-primary)]" />
+      {/* ambient glow */}
+      <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[var(--accent-primary)]/8 blur-[100px] rounded-full pointer-events-none" />
+
+      <h3 className="text-xl font-display font-bold text-[var(--text-primary)] mb-6 flex items-center gap-2 relative z-10">
+        <span className="w-8 h-8 rounded-xl bg-[var(--accent-primary)]/10 flex items-center justify-center">
+          <Plus className="w-4 h-4 text-[var(--accent-primary)]" />
+        </span>
         Post Surplus Food
       </h3>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Food Type Selection */}
+      <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+        {/* Food Type */}
         <div>
           <label className="block text-sm font-medium text-[var(--text-secondary)] mb-3">Food Type *</label>
           <div className="grid grid-cols-3 gap-3">
@@ -70,7 +85,9 @@ export default function PostFoodForm({ onPosted }) {
                   type="button"
                   onClick={() => update('food_type', type.value)}
                   className={`p-3 rounded-2xl border text-center transition-all duration-300 ${
-                    form.food_type === type.value ? type.color : 'border-[var(--card-border)] hover:border-[var(--accent-primary)]/30'
+                    form.food_type === type.value
+                      ? type.color
+                      : 'border-[var(--card-border)] hover:border-[var(--accent-primary)]/30 text-[var(--text-secondary)]'
                   }`}
                 >
                   <Icon className="w-5 h-5 mx-auto mb-1" />
@@ -81,31 +98,51 @@ export default function PostFoodForm({ onPosted }) {
           </div>
         </div>
 
+        {/* Description */}
         <div>
           <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Description *</label>
           <textarea
             value={form.description}
             onChange={(e) => update('description', e.target.value)}
-            placeholder="E.g., Fresh paneer biryani from lunch buffet..."
+            placeholder="E.g., Fresh paneer biryani from lunch buffet, Rice and curry..."
             rows={3}
-            className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20 transition-all text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] resize-none"
+            className={`${inputCls} resize-none`}
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Quantity (servings) *</label>
-          <input
-            type="number"
-            min="1"
-            value={form.quantity}
-            onChange={(e) => update('quantity', e.target.value)}
-            placeholder="E.g., 50"
-            className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20 transition-all text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
-          />
+        {/* Quantity + Unit row */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Quantity *</label>
+            <input
+              type="number"
+              min="1"
+              value={form.quantity}
+              onChange={(e) => update('quantity', e.target.value)}
+              placeholder="E.g., 50"
+              className={inputCls}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2 flex items-center gap-1">
+              <Scale className="w-3.5 h-3.5" /> Unit
+            </label>
+            <select
+              value={form.unit}
+              onChange={(e) => update('unit', e.target.value)}
+              className={inputCls}
+            >
+              {units.map((u) => (
+                <option key={u} value={u}>
+                  {u.charAt(0).toUpperCase() + u.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Hygiene Certification */}
-        <label className="flex items-start gap-3 p-4 rounded-2xl border border-[var(--card-border)] bg-gray-50 dark:bg-gray-900 cursor-pointer">
+        <label className="flex items-start gap-3 p-4 rounded-2xl border border-[var(--card-border)] bg-gray-50 dark:bg-gray-900 cursor-pointer hover:border-[var(--accent-primary)]/30 transition-all">
           <input
             type="checkbox"
             checked={form.hygiene_confirmed}

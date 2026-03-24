@@ -1,5 +1,6 @@
 # Dependencies
 client/node_modules/
+server/node_modules/
 
 # Build output
 client/dist/

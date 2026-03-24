@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { UtensilsCrossed, ListChecks, Bell, History } from 'lucide-react';
+import { UtensilsCrossed, ListChecks, Bell, History, Leaf } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import StatCard from '../components/common/StatCard';
 import PostFoodForm from '../components/donor/PostFoodForm';
@@ -33,6 +33,7 @@ export default function DonorDashboard() {
   const active = listings.filter((l) => ['AVAILABLE', 'REQUESTED', 'ACCEPTED'].includes(l.status));
   const fulfilled = listings.filter((l) => l.status === 'FULFILLED');
   const pending = requests.filter((r) => r.request_status === 'PENDING');
+  const totalMealsSaved = fulfilled.reduce((sum, l) => sum + (l.quantity || 0), 0);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12">
@@ -48,9 +49,9 @@ export default function DonorDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <StatCard icon={UtensilsCrossed} title="Active Listings" value={active.length} delay={0} />
-          <StatCard icon={ListChecks} title="Total Donated" value={fulfilled.length} delay={0.1} />
+          <StatCard icon={ListChecks} title="Donations Fulfilled" value={fulfilled.length} delay={0.1} />
           <StatCard icon={Bell} title="Pending Requests" value={pending.length} delay={0.2} />
-          <StatCard icon={History} title="Total Listings" value={listings.length} delay={0.3} />
+          <StatCard icon={Leaf} title="CO₂ Saved (kg)" value={(totalMealsSaved * 2.5).toFixed(1)} delay={0.3} />
         </div>
 
         {/* Post Food Form + Active Listings */}

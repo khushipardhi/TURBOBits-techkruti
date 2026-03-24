@@ -13,6 +13,7 @@ import DonorDashboard from './pages/DonorDashboard';
 import NgoDashboard from './pages/NgoDashboard';
 import VolunteerDashboard from './pages/VolunteerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import ProfilePage from './pages/ProfilePage';
 import NotFoundPage from './pages/NotFoundPage';
 
 // Role → dashboard path map
@@ -112,6 +113,15 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute allowedRoles={['DONOR', 'RECEIVER', 'VOLUNTEER', 'ADMIN']}>
+              <ProfilePage />
             </ProtectedRoute>
           }
         />

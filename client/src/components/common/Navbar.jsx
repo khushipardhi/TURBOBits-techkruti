@@ -161,9 +161,9 @@ export default function Navbar() {
                   )}
                 </button>
               </div>
-              <span className="text-sm text-[var(--text-secondary)]">
+              <Link to="/profile" className="text-sm text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer">
                 {user?.name}
-              </span>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 rounded-full bg-[var(--card-bg)] text-[var(--text-primary)] font-medium border border-[var(--card-border)] hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all duration-300 flex items-center gap-2 text-sm"

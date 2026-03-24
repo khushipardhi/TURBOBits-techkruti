@@ -43,3 +43,8 @@ export const FOOD_TYPES = {
   NON_VEG: 'NON_VEG',
   MIXED: 'MIXED',
 };
+
+// Helper to get stored token
+export function getToken() {
+  return localStorage.getItem('foodlink_token');
+}

@@ -112,7 +112,6 @@ router.post('/login', authLimiter, loginSchema, validate, async (req, res, next)
     next(err);
   }
 });
-
 // ==================== GET PROFILE ====================
 router.get('/profile', authenticate, async (req, res, next) => {
   try {
@@ -124,6 +123,37 @@ router.get('/profile', authenticate, async (req, res, next) => {
       return res.status(404).json({ success: false, error: 'User not found.' });
     }
     res.json({ success: true, data: users[0] });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ==================== UPDATE PROFILE ====================
+router.patch('/profile', authenticate, async (req, res, next) => {
+  try {
+    const { name, address, pin_code } = req.body;
+    const userId = req.user.user_id;
+
+    const updates = [];
+    const params = [];
+
+    if (name) { updates.push('name = ?'); params.push(name); }
+    if (address !== undefined) { updates.push('address = ?'); params.push(address || null); }
+    if (pin_code !== undefined) { updates.push('pin_code = ?'); params.push(pin_code || null); }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ success: false, error: 'No fields to update.' });
+    }
+
+    params.push(userId);
+    await db.execute(`UPDATE users SET ${updates.join(', ')} WHERE user_id = ?`, params);
+
+    const [updated] = await db.execute(
+      'SELECT user_id, role, name, phone, email, address, pin_code, trust_score, is_active, created_at FROM users WHERE user_id = ?',
+      [userId]
+    );
+
+    res.json({ success: true, message: 'Profile updated.', data: updated[0] });
   } catch (err) {
     next(err);
   }

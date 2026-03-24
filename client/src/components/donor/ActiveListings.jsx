@@ -141,6 +141,11 @@ export default function ActiveListings({ listings, onRefresh }) {
                 <div className="flex flex-col items-end gap-2 min-w-[100px]">
                   <CountdownTimer expiresAt={listing.expires_at} />
                   <StatusBadge status={listing.status} />
+                  {listing.pending_requests > 0 && (
+                    <span className="px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-bold uppercase tracking-wide border border-blue-500/20 animate-pulse">
+                      {listing.pending_requests} NGO{listing.pending_requests > 1 ? 's' : ''} interested
+                    </span>
+                  )}
                   {/* Cancel button — only for AVAILABLE listings */}
                   {listing.status === 'AVAILABLE' && (
                     <button

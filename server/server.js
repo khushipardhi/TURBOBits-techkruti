@@ -92,6 +92,31 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// Public impact stats (no auth, for landing page)
+app.get('/api/stats', async (req, res) => {
+  try {
+    const db = require('./src/config/db');
+    const [[{ totalMeals }]] = await db.execute("SELECT COALESCE(SUM(quantity), 0) AS totalMeals FROM food_listings WHERE status = 'FULFILLED'");
+    const [[{ totalDonations }]] = await db.execute("SELECT COUNT(*) AS totalDonations FROM food_listings WHERE status = 'FULFILLED'");
+    const [[{ totalDonors }]] = await db.execute("SELECT COUNT(*) AS totalDonors FROM users WHERE role = 'DONOR' AND is_active = TRUE");
+    const [[{ totalNGOs }]] = await db.execute("SELECT COUNT(*) AS totalNGOs FROM users WHERE role = 'RECEIVER' AND is_active = TRUE");
+    const [[{ totalVolunteers }]] = await db.execute("SELECT COUNT(*) AS totalVolunteers FROM users WHERE role = 'VOLUNTEER' AND is_active = TRUE");
+    res.json({
+      success: true,
+      data: {
+        meals_saved: parseInt(totalMeals),
+        total_donations: parseInt(totalDonations),
+        co2_prevented_kg: (parseFloat(totalMeals) * 2.5).toFixed(0),
+        active_donors: parseInt(totalDonors),
+        active_ngos: parseInt(totalNGOs),
+        active_volunteers: parseInt(totalVolunteers),
+      }
+    });
+  } catch (err) {
+    res.json({ success: true, data: { meals_saved: 0, total_donations: 0, co2_prevented_kg: '0', active_donors: 0, active_ngos: 0, active_volunteers: 0 } });
+  }
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/food', foodRoutes);

@@ -41,7 +41,11 @@ router.get('/available', authenticate, async (req, res, next) => {
 router.get('/my-listings', authenticate, authorize('DONOR'), async (req, res, next) => {
   try {
     const [listings] = await db.execute(
-      `SELECT * FROM food_listings WHERE donor_id = ? ORDER BY created_at DESC`,
+      `SELECT f.*, 
+              (SELECT COUNT(*) FROM food_requests WHERE food_id = f.food_id AND request_status = 'PENDING') AS pending_requests
+       FROM food_listings f 
+       WHERE f.donor_id = ? 
+       ORDER BY f.created_at DESC`,
       [req.user.user_id]
     );
     res.json({ success: true, data: listings });

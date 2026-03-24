@@ -47,7 +47,7 @@ export default function NgoDashboard() {
           <StatCard icon={UtensilsCrossed} title="Available Now" value={availableFood.length} delay={0} />
           <StatCard icon={Users} title="Meals Received" value={totalServings} delay={0.1} />
           <StatCard icon={Truck} title="Active Deliveries" value={requests.filter((r) => r.request_status === 'APPROVED').length} delay={0.2} />
-          <StatCard icon={Leaf} title="CO₂ Saved (kg)" value="42.5" delay={0.3} />
+          <StatCard icon={Leaf} title="CO₂ Saved (kg)" value={(totalServings * 2.5).toFixed(1)} delay={0.3} />
         </div>
 
         {/* Available Food Feed */}

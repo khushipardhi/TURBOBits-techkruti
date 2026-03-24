@@ -82,7 +82,7 @@ export default function ActiveListings({ listings, onRefresh }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="rounded-[2rem] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl overflow-hidden"
+      className="rounded-[2.5rem] bg-[var(--card-bg)] border border-[var(--card-border)] backdrop-blur-xl overflow-hidden h-full flex flex-col"
     >
       <div className="p-6 border-b border-[var(--border-color)] flex items-center justify-between">
         <h3 className="text-lg font-display font-bold text-[var(--text-primary)]">Active Listings</h3>
@@ -100,19 +100,45 @@ export default function ActiveListings({ listings, onRefresh }) {
               exit={{ opacity: 0 }}
               className="p-5 hover:bg-[var(--accent-primary)]/[0.02] transition-colors"
             >
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
                 <div className="flex-1">
-                  <p className="font-medium text-[var(--text-primary)] mb-1">{listing.description}</p>
-                  <div className="flex flex-wrap items-center gap-2 text-sm mb-2">
+                  {/* Parse and display items safely */}
+                  {(() => {
+                    let items = [];
+                    try {
+                      items = JSON.parse(listing.description).items || [];
+                    } catch {
+                      items = [{ name: listing.description, quantity: listing.quantity, unit: listing.unit }];
+                    }
+                    
+                    return (
+                      <div className="mb-3">
+                        <h4 className="text-base font-display font-semibold text-[var(--text-primary)] mb-2">
+                          {items.length > 1 ? `${items.length} Items Listed` : items[0]?.name}
+                        </h4>
+                        <div className="space-y-1 text-sm text-[var(--text-secondary)]">
+                          {items.slice(0, 3).map((itm, i) => (
+                            <div key={i} className="flex justify-between">
+                              <span className="truncate pr-3">• {itm.name}</span>
+                              <span className="flex-shrink-0 font-medium">{itm.quantity} {itm.unit || 'servings'}</span>
+                            </div>
+                          ))}
+                          {items.length > 3 && <div className="text-xs text-[var(--text-tertiary)] italic">+{items.length - 3} more items</div>}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="flex flex-wrap items-center gap-2 text-sm mb-3">
                     <StatusBadge status={listing.food_type} />
-                    <span className="text-[var(--text-tertiary)] text-xs">
-                      {listing.quantity} {listing.unit || 'servings'}
+                    <span className="text-[var(--text-tertiary)] text-xs font-medium bg-[var(--bg-secondary)] px-2 py-1 rounded-md border border-[var(--card-border)]">
+                      Total: {listing.quantity} {listing.unit || 'units'}
                     </span>
                   </div>
                   {/* Delivery timeline */}
                   <DeliveryTimeline status={listing.status} />
                 </div>
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-col items-end gap-2 min-w-[100px]">
                   <CountdownTimer expiresAt={listing.expires_at} />
                   <StatusBadge status={listing.status} />
                   {/* Cancel button — only for AVAILABLE listings */}

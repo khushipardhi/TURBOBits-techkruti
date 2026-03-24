@@ -84,13 +84,24 @@ export async function getDonorListings() {
 }
 
 export async function createFoodListing(foodData) {
+  // Wrap multi-item and extra fields in a JSON body for description
+  const payloadStr = JSON.stringify({
+    items: foodData.items,
+    prep_time: foodData.prep_time || null,
+    notes: foodData.notes || null
+  });
+
+  // Calculate total quantity for backward compatibility
+  const totalQuantity = foodData.items.reduce((acc, item) => acc + (parseInt(item.quantity) || 0), 0) || 1;
+  const firstUnit = foodData.items[0]?.unit || 'servings';
+
   const data = await request('/food', {
     method: 'POST',
     body: JSON.stringify({
       food_type: foodData.food_type,
-      description: foodData.description,
-      quantity: parseInt(foodData.quantity),
-      unit: foodData.unit || 'servings',
+      description: payloadStr.length <= 500 ? payloadStr : foodData.items.map(i => `${i.name}`).join(', ').substring(0, 500),
+      quantity: totalQuantity,
+      unit: firstUnit,
       hygiene_confirmed: foodData.hygiene_confirmed,
       pickup_address: foodData.pickup_address || null,
     }),
@@ -105,10 +116,10 @@ export async function cancelFoodListing(foodId) {
 
 // ==================== REQUESTS ====================
 
-export async function claimFood(foodId) {
+export async function claimFood(foodId, modifiedItems = null) {
   const data = await request('/requests/claim', {
     method: 'POST',
-    body: JSON.stringify({ food_id: foodId }),
+    body: JSON.stringify({ food_id: foodId, modified_items: modifiedItems }),
   });
   return data.data;
 }

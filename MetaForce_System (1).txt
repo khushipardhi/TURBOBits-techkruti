@@ -1,0 +1,581 @@
+# METAFORCE UI/UX SYSTEM - MASTER PROMPT
+
+**Instructions for AI Developer:** You are an expert Frontend Developer
+and UI/UX Designer. This document is a strict blueprint for generating
+premium, modern SaaS websites. You must use the exact design system,
+layout structure, component behavior, and UX rules defined below. Do NOT
+simplify. Preserve full complexity and detail. Your generated code must
+recreate this exact UI/UX system and adapt it only to the content
+provided in the "INPUT TEMPLATE".
+
+------------------------------------------------------------------------
+
+## 0. SYSTEM CONTROL LAYER (CRITICAL)
+
+### 1. IDENTITY LOCK
+
+-   The UI/UX style must remain unchanged across all generated websites
+-   Do NOT modify colors, spacing philosophy, or visual tone
+-   Maintain a consistent product-family look
+
+### 2. COMPONENT PRIORITY SYSTEM
+
+**MANDATORY:** - Navbar - Hero Section - Feature Bento Grid - Dashboard
+Preview (MacOS Frame) - CTA Section - Footer
+
+**OPTIONAL:** - Testimonials - Pricing - FAQ
+
+### 3. PAGE STRUCTURE ENFORCEMENT
+
+Force this exact presentation sequence. Do NOT reorder sections: 1.
+Navbar 2. Hero 3. Feature Grid 4. Dashboard Preview 5. Secondary Section
+6. CTA 7. Footer
+
+### 4. ANTI-SIMPLIFICATION RULE
+
+-   Do NOT simplify UI
+-   Do NOT remove animations, glow, gradients, or glass effects
+-   Always maintain full visual richness
+
+### 5. DESIGN CONSISTENCY RULE
+
+-   Only use defined variables and styles
+-   No improvisation allowed
+-   Maintain exact spacing, typography, and component behavior
+
+------------------------------------------------------------------------
+
+## 1. DESIGN SYSTEM
+
+### Color Palette (CSS Variables)
+
+**Light Mode Base:** - `--bg-primary: #ffffff` -
+`--bg-secondary: transparent` - `--bg-tertiary: transparent` -
+`--text-primary: #111827` - `--text-secondary: #374151` -
+`--text-tertiary: #6b7280` - `--border-color: rgba(0, 0, 0, 0.06)` -
+`--card-bg: rgba(255, 255, 255, 0.5)` -
+`--card-border: rgba(0, 0, 0, 0.05)` -
+`--card-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.04)` -
+`--accent-primary: #1e40af` - `--accent-secondary: #0369a1`
+
+**Dark Mode Base (Deep Dark):** - `--bg-primary: #050505` -
+`--bg-secondary: transparent` - `--bg-tertiary: transparent` -
+`--text-primary: #f9fafb` - `--text-secondary: #d1d5db` -
+`--text-tertiary: #9ca3af` -
+`--border-color: rgba(255, 255, 255, 0.08)` -
+`--card-bg: rgba(255, 255, 255, 0.04)` -
+`--card-border: rgba(255, 255, 255, 0.08)` -
+`--card-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.3)` -
+`--accent-primary: #3b82f6` - `--accent-secondary: #0ea5e9`
+
+### Typography (Tailwind Integration)
+
+-   **Base font (`font-sans`)**: "Roboto", ui-sans-serif, system-ui,
+    sans-serif
+-   **Display/Headings (`font-display`)**: "Inter", sans-serif. Apply to
+    `h1`-`h6` with `font-bold` and `tracking-tight`.
+-   **Monospace (`font-mono`)**: "JetBrains Mono", monospace.
+-   **Editorial Accent (`.editorial-accent`)**:
+    `font-display font-semibold opacity-90`.
+
+### Background Effects & Gradients
+
+-   **Global Grid Background (`.global-grid-bg`)**: Linear gradients
+    drawing a 24x24px grid with rgba(128,128,128,0.08) acting as thin
+    1px lines overlaid on sections.
+-   **Glow Effects**: Large absolute rounded-full divs with heavy blur
+    (`blur-[100px]` to `blur-[120px]`), opacity (10% to 30%), using
+    accent colors positioned behind core content (e.g., center hero,
+    corner of bento cards) to create soft ambient lighting.
+
+### Glassmorphism Rules
+
+-   **Rule**:
+    `[class*="--card-bg"] { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }`.
+-   Any card or panel must use `--card-bg`, border using
+    `--card-border`, and `backdrop-blur-xl` or `backdrop-blur-md` to
+    ensure the content beneath and grid background blend seamlessly.
+
+------------------------------------------------------------------------
+
+## 2. LAYOUT SYSTEM
+
+### Navbar Structure
+
+-   **Positioning**: Fixed to top
+    (`fixed top-0 inset-x-0 z-50 transition-all duration-300`).
+-   **Scroll State**:
+    -   Top: Transparent background, `border-transparent`, high padding
+        (`py-5`).
+    -   Scrolled (\>20px): `bg-[var(--bg-primary)]/40`,
+        `backdrop-blur-md`,
+        `border-b-[1px] border-[var(--border-color)]/50`, reduced
+        padding (`py-3`), `shadow-sm`.
+-   **Navigation Links**:
+    -   Default: `text-[var(--text-secondary)]`, relative block.
+    -   Active: Pill-shaped background using
+        `bg-gradient-to-r from-[var(--accent-primary)]/10 to-[var(--accent-secondary)]/10`
+        via Framer Motion `layoutId`, and `text-[var(--text-primary)]`.
+    -   Hover Effect: A soft gradient underline via a
+        `group-hover:opacity-100` absolute div
+        (`bottom-0 h-[2px] shadow-[0_2px_10px_var(--accent-primary)]`).
+-   **Actions**: Theme toggle icon (Sun/Moon), text link (Contact), and
+    a solid Action Button (e.g., "Join Beta").
+
+### Hero Section
+
+-   **Spacing**: Heavy top padding (`pt-32` to `pt-48`) and large bottom
+    padding.
+-   **Background**: Ambient blur glows (absolute, `-z-10`) behind text.
+-   **Sub-badge**: Pill shape with a pinging dot animation
+    (`animate-ping` for active status).
+-   **Headline**: Massive text (`text-5xl md:text-8xl`), negative
+    tracking (`tracking-tight`), `leading-[1.05]`. Accents in the title
+    must use
+    `text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)]`.
+-   **Subtitle**: Large muted text
+    (`text-lg md:text-xl text-[var(--text-secondary)]`), max-width
+    constrained.
+-   **CTA Group**: Dual buttons (primary solid shadow-blue, secondary
+    transparent outline).
+
+### Section Flow
+
+-   **Divider**: Sections separated by
+    `border-b border-[var(--border-color)]`.
+-   **Background**: Sections explicitly set to `bg-transparent` to allow
+    the underlying global grid or body background to seep through.
+-   **Header format**: Centered, `text-3xl md:text-5xl`, tracking tight,
+    accompanied by a `text-[var(--text-secondary)] text-lg` max-width
+    paragraph.
+
+### Footer Structure
+
+-   **Container**:
+    `bg-[var(--bg-primary)]/50 backdrop-blur-md border-t border-[var(--border-color)] pt-16 pb-8`.
+-   **Grid Layout**: 4-column grid (`md:grid-cols-4`). 1st column: Logo,
+    Description, Social icons. 2nd-4th columns: Link groups.
+-   **Links**: Small text,
+    `text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors`.
+-   **Bottom Bar**: Copyright text, operational status ticker.
+
+------------------------------------------------------------------------
+
+## 3. COMPONENT SYSTEM
+
+### Bento Grid Cards (Feature Cards)
+
+-   **Container**: Oversized rounding (`rounded-[2.5rem]`), `--card-bg`,
+    border setup, overflow-hidden.
+-   **Hover Behavior**:
+    -   `hover:-translate-y-2 transition-all duration-500`
+    -   Deep soft shadow
+        `hover:shadow-[0_20px_40px_-15px_rgba(var(--accent-primary-rgb),0.15)]`
+    -   Border tint `hover:border-[var(--accent-primary)]/40`.
+-   **Inner Ambient Glow**: Absolute corner glow
+    `opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[100px] bg-[var(--accent-primary)]/20`.
+-   **Decorative Watermark**: A massive Lucide icon placed
+    top-right/bottom right (`w-48 h-48`), `opacity-5`, scales and
+    rotates on group hover.
+-   **Icon Block**:
+    `w-16 h-16 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--card-border)]`
+    featuring an inner shadow and an absolute glow layer on hover.
+-   **Typography on Hover**: Heading gets
+    `bg-clip-text text-transparent bg-gradient-to-r`.
+
+### Buttons
+
+-   **Primary CTA**:
+    `rounded-full text-white font-semibold shadow-[0_4px_14px_0_rgba(accent,0.39)] hover:shadow-[0_6px_20px_rgba(accent,0.23)] hover:-translate-y-1 transition-all`.
+    Flex layout with Lucide right arrow.
+-   **Secondary CTA**:
+    `rounded-full bg-[var(--card-bg)] text-[var(--text-primary)] font-semibold border border-[var(--card-border)] hover:bg-[var(--bg-secondary)] hover:shadow-md transition-all duration-300`.
+
+### Forms
+
+-   **Input Styling**:
+    `bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 text-sm`.
+-   **Focus State**:
+    `focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20`.
+
+### Dashboard Preview Component (MacOS Frame)
+
+-   **Container**: Absolute/Relative positioning, Aspect ratio
+    constraint (`aspect-[16/10]`),
+    `rounded-[2rem] border border-gray-200 bg-[#F8FAFC] shadow-2xl overflow-hidden`.
+-   **MacOS Header bar**: 40px height, `bg-gray-100`, flex row, three
+    colored dots for close/min/max (Red/Amber/Emerald).
+-   **In-App Header**: Sleek spacing, App title left, Pill-shaped active
+    tab navigation center, contextual badges right.
+-   **Interactive Behavior**: Framer motion wrapping. The preview floats
+    gracefully
+    `animate={{ y: [-8, 8, -8] }} transition={{ duration: 6, repeat: Infinity }}`.
+    Data inside the dashboard uses Recharts and responsive grids.
+
+------------------------------------------------------------------------
+
+## 4. UX RULES
+
+### Spacing System
+
+-   Strict adherence to generous padding. Sub-sections use `py-24` or
+    `py-32`.
+-   Elements breathe significantly (e.g. `mb-10` after headings, `gap-8`
+    or `gap-16` in grids).
+-   Internal card padding large by default (`p-8 md:p-12`).
+
+### Alignment Rules
+
+-   Section headers are almost universally `text-center`, tracking
+    tight, creating a monumental feel.
+-   Card contents generally align to the bottom inside relative layouts
+    (flex-col justify-end).
+
+### Animation Patterns
+
+-   Use **Framer Motion** for all core mounting.
+-   **Entry Animations**:
+    `initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: stagger }}`.
+-   All hover effects should use `cubic-bezier` or standard
+    `transition-all duration-300` to `duration-500`. No snappy/instant
+    hover effects; everything gracefully fades.
+
+### Hover Effects
+
+-   Global `.glass-hover`: `hover:scale(1.02)` and soft glow box-shadow.
+-   Card contents dynamically shift (e.g., icons tint, text acquires
+    gradients, background ambient glows materialize).
+
+------------------------------------------------------------------------
+
+## 5. RESPONSIVENESS RULES
+
+### Mobile Scaling Strategy
+
+-   Typography shrinks cleanly (e.g. `text-5xl md:text-8xl`).
+-   High-padding scales down (`p-8` -\> `md:p-12`, `py-20` -\>
+    `md:py-32`).
+-   Bento Grids break down from 3-column spans into single column
+    flex-cols.
+
+### Preview Scaling (IMPORTANT: STRICT RULE)
+
+-   The "Dashboard Preview" or heavy visual UI mockups **Must NOT** use
+    standard CSS flex wrapping or media queries to squish internal
+    components on mobile.
+
+-   Instead, use `transform: scale()`.
+
+-   Wrapper configuration:
+
+    ``` css
+    .dashboard-preview-wrapper { width: 100%; overflow: hidden; display: flex; justify-content: center; }
+    @media (max-width: 768px) { .dashboard-preview-scale { transform: scale(0.6); transform-origin: top center; } }
+    @media (max-width: 480px) { .dashboard-preview-scale { transform: scale(0.5); transform-origin: top center; } }
+    ```
+
+------------------------------------------------------------------------
+
+## 6. STRICT DESIGN RULES
+
+-   **DO NOT CHANGE UI PARADIGMS**: Do not invent new card styles or
+    color systems. Only use what is listed here.
+-   **MAINTAIN PREMIUM SAAS FEEL**: Keep the negative tracking on
+    headings, keep the massive border radius (`rounded-[2.5rem]`,
+    `rounded-[2rem]`), and use the glowing shadows.
+-   **MAINTAIN CONSISTENCY**: If a section is dark mode, the glowing
+    elements must align with `--accent-primary`. Text contrast must
+    always be high enough to read against the `backdrop-blur`.
+
+------------------------------------------------------------------------
+
+## 7. INPUT TEMPLATE
+
+*When the user provides this block of text, you will generate the
+website using the system defined above.*
+
+    [PRODUCT NAME]: 
+    [DESCRIPTION]: 
+    [FEATURES]: 
+    [AUDIENCE]: 
+
+------------------------------------------------------------------------
+
+## 8. OUTPUT INSTRUCTIONS
+
+When you receive the Input Template: 1. **Analyze content**: Map the
+provided Features to the 3-column Bento Grid Layout. 2. **Draft
+Content**: Write punchy headings, subheadings, and CTAs tailored to the
+`[AUDIENCE]` and `[PRODUCT NAME]`. 3. **Enforce SYSTEM CONTROL LAYER
+strictly**: Ensure the generated UI matches the identity lock and page
+structure exactly. 4. **Generate Code using Component Blueprints**:
+*CRITICAL*: Re-use the exact code structures from the Component
+Blueprints (Section 10). Do NOT invent new structure. Modify only
+content, not layout. Maintain all animations and effects. Output a
+complete Vite/React component structure using Tailwind CSS and Framer
+Motion. 5. **Implement Mockup**: Build a custom
+`[Product Name]DashboardPreview.tsx` inside the Dashboard Preview MacOS
+Frame using realistic dummy data related to the provided
+`[DESCRIPTION]`. 6. **Reject Simplification Attempts**: Ensure **ALL**
+animations, blur effects, glassmorphism filters, gradients, and complex
+nested group-hover states from this prompt are applied with full
+fidelity. Do not output a "simple" version. Ensure the Dashboard Preview
+Mobile Scaling strategy is preserved seamlessly without responsive
+breaking/squishing.
+
+------------------------------------------------------------------------
+
+## 9. VALIDATION RULES
+
+Before final output, verify:
+
+✔ All mandatory components exist\
+✔ Layout order is correct\
+✔ No UI simplification occurred\
+✔ All glow, blur, and gradients are present\
+✔ Responsive scaling (not restructuring) is applied\
+✔ Dashboard preview uses transform scale (not responsive break)
+
+If any rule fails → regenerate until correct.
+
+------------------------------------------------------------------------
+
+## 10. COMPONENT BLUEPRINTS (CODE REFERENCE)
+
+**CRITICAL RULE:** You must use these EXACT code snippets as the
+foundation for all generated UI components. Modify the text, icons, and
+minor visual details if specifically necessitated by the input content,
+but DO NOT alter the core structure, glassmorphism, glowing shadows, or
+Framer Motion properties.
+
+### 1. NAVBAR BLUEPRINT
+
+``` tsx
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion } from "motion/react";
+import { cn } from "../lib/utils";
+
+export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <header
+      className={cn(
+        "fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b border-transparent",
+        isScrolled
+          ? "bg-[var(--bg-primary)]/40 backdrop-blur-md border-b-[1px] border-[var(--border-color)]/50 py-3 shadow-sm"
+          : "bg-transparent py-5 border-b-[1px] border-transparent"
+      )}
+    >
+      <div className="max-w-7xl mx-auto px-6 flex flex-row items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="inline-block transition-opacity hover:opacity-90">
+          <div className="font-display font-bold text-xl tracking-tight text-[var(--text-primary)]">Logo</div>
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-2">
+          {[{ name: "Link 1", path: "/1" }, { name: "Link 2", path: "/2" }].map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={cn(
+                  "relative px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full group",
+                  isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                )}
+              >
+                <span className="relative z-10">{link.name}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 bg-gradient-to-r from-[var(--accent-primary)]/10 to-[var(--accent-secondary)]/10 rounded-full z-0"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <div className="absolute inset-x-4 bottom-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--accent-primary)]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0 shadow-[0_2px_10px_var(--accent-primary)] pointer-events-none rounded-full" />
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </header>
+  );
+}
+```
+
+### 2. HERO SECTION BLUEPRINT
+
+``` tsx
+import { motion } from "motion/react";
+
+export default function HeroSection() {
+  return (
+    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+        <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-[var(--accent-primary)] opacity-20 blur-[100px]"></div>
+        <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-[var(--accent-secondary)]/10 blur-[120px] rounded-full opacity-30 dark:opacity-20"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-[var(--text-primary)] mb-6 leading-[1.05]"
+        >
+          Transform Your Work <br className="hidden md:block" />
+          with <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-primary)] to-[var(--accent-secondary)]">Excellence</span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-10 leading-relaxed"
+        >
+          A brief impressive subtitle goes here.
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+```
+
+### 3. BENTO CARD BLUEPRINT
+
+``` tsx
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  className="p-8 md:p-12 rounded-[2.5rem] bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[var(--accent-primary)]/40 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.15)] hover:-translate-y-2 transition-all duration-500 relative overflow-hidden group"
+>
+  {/* Decorative Watermark Icon */}
+  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-500 transform group-hover:scale-110 group-hover:rotate-3">
+    <Icon className="w-48 h-48 text-[var(--accent-primary)] drop-shadow-2xl" />
+  </div>
+  
+  {/* Ambient Background Glow on Hover */}
+  <div className="absolute top-1/2 right-1/4 w-[200px] h-[200px] bg-[var(--accent-primary)]/20 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+  <div className="relative z-10 h-full flex flex-col justify-end">
+    {/* Animated Foreground Icon Block */}
+    <div className="w-16 h-16 rounded-2xl bg-[var(--bg-secondary)] flex items-center justify-center mb-8 group-hover:bg-[var(--accent-primary)]/10 transition-colors duration-500 shadow-inner border border-[var(--card-border)] relative">
+      <div className="absolute inset-0 bg-[var(--accent-primary)] opacity-0 group-hover:opacity-20 blur-xl rounded-2xl transition-opacity duration-500" />
+      <Icon className="w-8 h-8 text-[var(--text-secondary)] group-hover:text-[var(--accent-primary)] transition-colors relative z-10" />
+    </div>
+    
+    <h3 className="text-2xl md:text-3xl font-semibold text-[var(--text-primary)] mb-4 tracking-tight group-hover:bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-[var(--text-primary)] group-hover:to-[var(--accent-primary)] transition-all">
+      Feature Title
+    </h3>
+    <p className="text-[var(--text-secondary)] text-lg leading-relaxed max-w-md">
+      Feature description text demonstrating value to the user.
+    </p>
+  </div>
+</motion.div>
+```
+
+### 4. BUTTON SYSTEM BLUEPRINT
+
+``` tsx
+{/* Primary CTA Button */}
+<Link
+  to="/primary-action"
+  className="px-8 py-4 rounded-full text-white font-semibold shadow-[0_4px_14px_0_rgba(59,130,246,0.39)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.23)] hover:-translate-y-1 transition-all flex items-center justify-center gap-2 bg-[var(--accent-primary)]"
+>
+  Primary Action
+</Link>
+
+{/* Secondary CTA Button (Glass) */}
+<Link
+  to="/secondary-action"
+  className="px-8 py-4 rounded-full bg-[var(--card-bg)] text-[var(--text-primary)] font-semibold border border-[var(--card-border)] hover:bg-[var(--bg-secondary)] hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2"
+>
+  Secondary Action
+</Link>
+```
+
+### 5. FORM INPUT BLUEPRINT
+
+``` tsx
+<input
+  type="text"
+  placeholder="Enter something..."
+  className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/20 transition-all text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+/>
+```
+
+### 6. DASHBOARD PREVIEW BLUEPRINT (MacOS Frame)
+
+``` tsx
+<motion.div
+  initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, delay: 0.2, type: "spring", bounce: 0.2 }}
+>
+  <motion.div
+    animate={{ y: [-8, 8, -8] }}
+    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+    className="rounded-[2rem] border border-gray-200 bg-[#F8FAFC] shadow-2xl overflow-hidden flex flex-col relative aspect-[4/3] md:aspect-[16/10] w-full max-h-[800px]"
+  >
+    {/* MacOS Header bar */}
+    <div className="h-10 bg-gray-100 border-b border-gray-200 flex items-center px-4 gap-2">
+      <div className="w-3 h-3 rounded-full bg-red-400" />
+      <div className="w-3 h-3 rounded-full bg-amber-400" />
+      <div className="w-3 h-3 rounded-full bg-emerald-400" />
+    </div>
+
+    {/* App Header */}
+    <div className="bg-white px-8 py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100">
+      <h2 className="text-2xl font-black text-gray-800 tracking-tighter">APP NAME</h2>
+      <div className="w-full flex-1 md:flex-none" />
+    </div>
+
+    {/* Example Dashboard Inner Container */}
+    <div className="flex-1 overflow-y-auto p-6 bg-[#F8FAFC]">
+      {/* Build mock dashboard content here */}
+    </div>
+  </motion.div>
+</motion.div>
+```
+
+### 7. MOBILE SCALING CODE (CRITICAL CSS)
+
+**Must include this exact CSS for the Dashboard Preview wrapper.**
+
+``` css
+.dashboard-preview-wrapper {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+.dashboard-preview-scale {
+  transform-origin: top center;
+}
+
+@media (max-width: 768px) {
+  .dashboard-preview-scale {
+    transform: scale(0.6);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-preview-scale {
+    transform: scale(0.5);
+  }
+}
+```

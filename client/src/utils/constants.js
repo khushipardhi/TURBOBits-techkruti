@@ -1,5 +1,5 @@
-// API Base URL (will point to backend when ready)
-export const API_BASE_URL = 'http://localhost:8000/api';
+// API Base URL (Dynamic for Vercel vs Local)
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 // User Roles
 export const ROLES = {

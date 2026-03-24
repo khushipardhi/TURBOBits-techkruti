@@ -31,9 +31,12 @@ const app = express();
 // Security headers
 app.use(helmet());
 
-// CORS
+// CORS - dynamically allow any origin (Hackathon friendly)
 app.use(cors({
-  origin: CORS_ORIGIN,
+  origin: function (origin, callback) {
+    // Allow all origins
+    callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
